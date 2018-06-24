@@ -3,11 +3,18 @@
 
 #include <string>
 
+#include "../Cola/Cola.h"
+#include "../Cola/Mensajes.h"
+
 using namespace std;
 
 class Servidor {
+private:
+    Cola<mensaje>* cola;
+
 public:
-    Servidor();
+    Servidor(const string& archivo, char letra);
+    ~Servidor();
 
     void iniciar();
 };

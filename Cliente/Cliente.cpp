@@ -42,6 +42,12 @@ void Cliente::iniciar() {
     }
 }
 
-Cliente::Cliente() {
+Cliente::Cliente(const string& archivo, const char letra) {
+    cout << "Creando cliente" << endl;
+    this->cola = new Cola<mensaje>(archivo, letra);
     cout << "Cliente creado" << endl;
+}
+
+Cliente::~Cliente() {
+    delete this->cola;
 }

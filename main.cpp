@@ -5,6 +5,8 @@
 #include "Util/Util.h"
 
 int main(int argc, char* argv[]) {
+    static const string ARCHIVO = "/bin/ls";
+    static const char LETRA = 'h';
 
     t_parametros params = Util::tomarParametros(argc, argv);
     int codigoValidacion = Util::validarParametros(params);
@@ -14,10 +16,10 @@ int main(int argc, char* argv[]) {
     }
 
     if (MODO_CLIENTE == params.modo) {
-        Cliente cliente;
+        Cliente cliente(ARCHIVO, LETRA);
         cliente.iniciar();
     } else if (MODO_SERVIDOR == params.modo) {
-        Servidor server;
+        Servidor server(ARCHIVO, LETRA);
         server.iniciar();
     }
 

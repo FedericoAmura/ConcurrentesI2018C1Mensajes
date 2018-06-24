@@ -3,14 +3,20 @@
 
 #include <string>
 
+#include "../Cola/Cola.h"
+#include "../Cola/Mensajes.h"
+
 using namespace std;
 
 class Cliente {
+private:
+    Cola<mensaje>* cola;
+
 public:
-    Cliente();
+    Cliente(const string& archivo, char letra);
+    ~Cliente();
 
     void iniciar();
-
 };
 
 
