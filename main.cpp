@@ -1,4 +1,7 @@
 #include <iostream>
+
+#include "Cliente/Cliente.h"
+#include "Servidor/Servidor.h"
 #include "Util/Util.h"
 
 int main(int argc, char* argv[]) {
@@ -11,9 +14,11 @@ int main(int argc, char* argv[]) {
     }
 
     if (MODO_CLIENTE == params.modo) {
-        cout << "Iniciando en modo cliente" << endl;
+        Cliente cliente;
+        cliente.iniciar();
     } else if (MODO_SERVIDOR == params.modo) {
-        cout << "Iniciando en modo servidor" << endl;
+        Servidor server;
+        server.iniciar();
     }
 
     return 0;

@@ -5,6 +5,8 @@ set(CMAKE_CXX_STANDARD 11)
 set(SOURCE
         ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp)
 
+add_subdirectory("${PROJECT_SOURCE_DIR}/Cliente")
+add_subdirectory("${PROJECT_SOURCE_DIR}/Servidor")
 add_subdirectory("${PROJECT_SOURCE_DIR}/Util")
 
 
