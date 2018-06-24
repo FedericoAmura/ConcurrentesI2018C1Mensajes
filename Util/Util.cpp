@@ -80,7 +80,7 @@ string Util::obtenerMensajeError(int codigoMensaje) {
     string mensaje;
     switch (codigoMensaje) {
         case 1:
-            mensaje = "Parametros incorrectos: Agregue -c para iniciar cliente, ó -s para iniciar en modo servidor.";
+            mensaje = "Parametros incorrectos: Agregue -c para iniciar en modo cliente o -s para iniciar en modo servidor.";
             break;
         default:
             break;
