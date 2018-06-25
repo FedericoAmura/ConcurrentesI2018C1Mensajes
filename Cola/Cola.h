@@ -15,7 +15,7 @@ template <class T> class Cola {
 	public:
 		Cola ( const std::string& archivo,const char letra );
 		~Cola();
-		int escribir ( const T& dato ) const;
+		int escribir ( T& dato ) const;
 		int leer ( const int tipo,T* buffer ) const;
 		int destruir () const;
 };
@@ -38,7 +38,7 @@ template <class T> int Cola<T> :: destruir () const {
 	return resultado;
 }
 
-template <class T> int Cola<T> :: escribir ( const T& dato ) const {
+template <class T> int Cola<T> :: escribir ( T& dato ) const {
 	int resultado = msgsnd ( this->id,static_cast<const void*>(&dato),sizeof(T)-sizeof(long),0 );
 	return resultado;
 }

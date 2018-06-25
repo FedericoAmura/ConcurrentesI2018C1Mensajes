@@ -14,6 +14,8 @@ private:
     Cola<mensaje>* cola;
     SIGINT_Handler sigint_handler;
 
+    int procesarPeticion();
+
 public:
     Servidor(const string& archivo, char letra);
     ~Servidor();

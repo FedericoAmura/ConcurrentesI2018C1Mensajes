@@ -1,4 +1,5 @@
 #include <iostream>
+#include <unistd.h>
 
 #include "Cliente.h"
 
@@ -22,17 +23,11 @@ void Cliente::iniciar() {
                 cout << "Se procedera a cerrar el cliente" << endl;
                 break;
             case '1': {
-                cout << endl;
-                cout << "=============================================" << endl;
-                cout << "             Consulta de personas            " << endl;
-                cout << "=============================================" << endl;
+                consultarPersona();
                 break;
             }
             case '2': {
-                cout << endl;
-                cout << "=============================================" << endl;
-                cout << "               Alta de persona               " << endl;
-                cout << "=============================================" << endl;
+                altaPersona();
                 break;
             }
             default:
@@ -40,6 +35,78 @@ void Cliente::iniciar() {
                 break;
         }
     }
+}
+
+int Cliente::consultarPersona() {
+    mensaje request;
+    mensaje response;
+
+    cout << endl;
+    cout << "=============================================" << endl;
+    cout << "             Consulta de personas            " << endl;
+    cout << "=============================================" << endl;
+
+    request.mtype = REQUEST;
+    request.pid = getpid();
+    request.cmd = CMD_CONSULTAR;
+    strcpy(request.nombre,"Estamos");
+    strcpy(request.direccion,"Consultando");
+    strcpy(request.telefono,"Gente");
+
+    cout << "Vamos a enviar la consulta" << endl;
+
+    this->cola->escribir(request);
+
+    cout << "Enviamos la consulta" << endl;
+
+    this->cola->leer(RESPONSE, &response);
+
+    cout << "Recibimos la respuesta" << endl;
+
+    cout << "mtype " << response.mtype << endl;
+    cout << "pid " << response.pid << endl;
+    cout << "cmd " << response.cmd << endl;
+    cout << "nombre " << response.nombre << endl;
+    cout << "direccion " << response.direccion << endl;
+    cout << "telefono " << response.telefono << endl;
+
+    return 0;
+}
+
+int Cliente::altaPersona() {
+    mensaje request;
+    mensaje response;
+
+    cout << endl;
+    cout << "=============================================" << endl;
+    cout << "               Alta de persona               " << endl;
+    cout << "=============================================" << endl;
+
+    request.mtype = REQUEST;
+    request.pid = getpid();
+    request.cmd = CMD_CONSULTAR;
+    strcpy(request.nombre,"Damos");
+    strcpy(request.direccion,"de alta");
+    strcpy(request.telefono,"Personas");
+
+    cout << "Vamos a enviar la consulta" << endl;
+
+    this->cola->escribir(request);
+
+    cout << "Enviamos la consulta" << endl;
+
+    this->cola->leer(RESPONSE, &response);
+
+    cout << "Recibimos la respuesta" << endl;
+
+    cout << "mtype " << response.mtype << endl;
+    cout << "pid " << response.pid << endl;
+    cout << "cmd " << response.cmd << endl;
+    cout << "nombre " << response.nombre << endl;
+    cout << "direccion " << response.direccion << endl;
+    cout << "telefono " << response.telefono << endl;
+
+    return 0;
 }
 
 Cliente::Cliente(const string& archivo, const char letra) {

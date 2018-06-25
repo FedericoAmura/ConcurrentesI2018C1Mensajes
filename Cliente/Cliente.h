@@ -12,6 +12,9 @@ class Cliente {
 private:
     Cola<mensaje>* cola;
 
+    int consultarPersona();
+    int altaPersona();
+
 public:
     Cliente(const string& archivo, char letra);
     ~Cliente();
