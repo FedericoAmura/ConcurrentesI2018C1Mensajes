@@ -5,12 +5,14 @@
 
 #include "../Cola/Cola.h"
 #include "../Cola/Mensajes.h"
+#include "../Signal/SIGINT_Handler.h"
 
 using namespace std;
 
 class Servidor {
 private:
     Cola<mensaje>* cola;
+    SIGINT_Handler sigint_handler;
 
 public:
     Servidor(const string& archivo, char letra);
