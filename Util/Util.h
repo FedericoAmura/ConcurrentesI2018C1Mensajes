@@ -11,6 +11,7 @@ const int MODO_CLIENTE = 2;
 
 typedef struct parametros {
     int modo;
+    bool debug;
 } t_parametros;
 
 class Util {
