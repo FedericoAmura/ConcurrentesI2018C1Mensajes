@@ -4,6 +4,7 @@
 #define	REQUEST 1
 #define RESPONSE 2
 
+#define CMD_ERROR -1
 #define CMD_INSERTAR 1
 #define CMD_CONSULTAR 2
 #define CMD_INSERTADO 3

@@ -47,8 +47,14 @@ void Cliente::ejecutarComandos(string caracteristica) {
         strcpy(request.telefono,cm[4].str().c_str());
 
         this->cola->escribir(request);
-        this->cola->leer(RESPONSE, &response);
-        cout << "Registro insertado" << endl;
+        this->cola->leer(getpid(), &response);
+        if (response.cmd == CMD_INSERTADO) {
+            cout << "Se inserto el registro" << endl;
+            cout << "Nombre - Direccion - Telefono" << endl;
+            cout << response.nombre << " - " << response. direccion << " - " << response.telefono << endl;
+        } else {
+            cout << "Error al insertar registro" << endl;
+        }
     } else if (std::regex_match(caracteristica.c_str(),cm,eListar)) {
         mensaje request;
         mensaje response;
@@ -61,8 +67,17 @@ void Cliente::ejecutarComandos(string caracteristica) {
         strcpy(request.telefono,cm[4].str().c_str());
 
         this->cola->escribir(request);
-        this->cola->leer(RESPONSE, &response);
 
+        this->cola->leer(getpid(), &response);
+        if (response.cmd == CMD_VACIO) {
+            cout << "Su consulta no encontro ningun registro" << endl;
+        } else {
+            cout << "Nombre - Direccion - Telefono" << endl;
+            while (response.cmd != CMD_VACIO) {
+                cout << response.nombre << " - " << response. direccion << " - " << response.telefono << endl;
+                this->cola->leer(getpid(), &response);
+            }
+        }
     } else if (caracteristica.compare("listar") == 0) {
         mensaje request;
         mensaje response;
@@ -75,8 +90,17 @@ void Cliente::ejecutarComandos(string caracteristica) {
         strcpy(request.telefono,"");
 
         this->cola->escribir(request);
-        this->cola->leer(RESPONSE, &response);
 
+        this->cola->leer(getpid(), &response);
+        if (response.cmd == CMD_VACIO) {
+            cout << "Su consulta no encontro ningun registro" << endl;
+        } else {
+            cout << "Nombre - Direccion - Telefono" << endl;
+            while (response.cmd != CMD_VACIO) {
+                cout << response.nombre << " - " << response. direccion << " - " << response.telefono << endl;
+                this->cola->leer(getpid(), &response);
+            }
+        }
     } else if (caracteristica.compare("ayuda") == 0) {
         cout << endl;
         cout << "=============================================" << endl;

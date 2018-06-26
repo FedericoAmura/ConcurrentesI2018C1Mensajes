@@ -31,17 +31,45 @@ int Servidor::procesarPeticion () {
     cout << "telefono " << request.telefono << endl;
 
     // preparamos la respuesta con lo generico
-    response.mtype = RESPONSE;
+    response.mtype = request.pid;
     response.pid = getpid();
-    response.cmd = CMD_CONSULTAR;
-    strcpy(response.nombre,"Procesamos");
-    strcpy(response.direccion,"Un");
-    strcpy(response.telefono,"Request");
+    // y ahora la procesamos segun lo que nos pidieron
+    if (request.cmd == CMD_INSERTAR) {
+        // aca insertamos un registro
+        // TODO insertamos el registro en la DB
+        response.cmd = CMD_INSERTADO;
+        strcpy(response.nombre,request.nombre);
+        strcpy(response.direccion,request.direccion);
+        strcpy(response.telefono,request.telefono);
+        this->cola->escribir(response);
+    } else if (request.cmd == CMD_CONSULTAR) {
+        // aca consultamos registros
+        // TODO sacamos los registros de la DB y los mandamos en loop, en vez de hardcodear
+        response.cmd = CMD_RESPUESTA;
+        strcpy(response.nombre,"primer");
+        strcpy(response.direccion,"registro");
+        strcpy(response.telefono,"encontrado");
+        this->cola->escribir(response);
+        response.cmd = CMD_RESPUESTA;
+        strcpy(response.nombre,"segundo");
+        strcpy(response.direccion,"registro");
+        strcpy(response.telefono,"encontrado");
+        this->cola->escribir(response);
 
-    // procesamos la peticion mientras completamos la respuesta
-    cout << "Vamos a responder" << endl;
-
-    this->cola->escribir(response);
+        // enviamos un ultimo registro para marcar el final
+        response.cmd = CMD_VACIO;
+        strcpy(response.nombre,"");
+        strcpy(response.direccion,"");
+        strcpy(response.telefono,"");
+        this->cola->escribir(response);
+    } else {
+        // comando del request invalido
+        response.cmd = CMD_ERROR;
+        strcpy(response.nombre,"");
+        strcpy(response.direccion,"");
+        strcpy(response.telefono,"");
+        this->cola->escribir(response);
+    }
 
     return 0;
 }
