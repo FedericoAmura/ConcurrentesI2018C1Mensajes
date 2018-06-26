@@ -17,7 +17,7 @@ int main(int argc, char* argv[]) {
 
     if (MODO_CLIENTE == params.modo) {
         Cliente cliente(ARCHIVO, LETRA);
-        cliente.iniciar();
+        cliente.iniciarTerminal();
     } else if (MODO_SERVIDOR == params.modo) {
         Servidor server(ARCHIVO, LETRA);
         server.iniciar();

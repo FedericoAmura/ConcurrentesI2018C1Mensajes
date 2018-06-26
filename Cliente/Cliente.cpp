@@ -1,12 +1,84 @@
 #include <iostream>
 #include <unistd.h>
-
+#include <cstring>
+#include <string>
+#include <regex>
 #include "Cliente.h"
 
 using namespace std;
 
+void Cliente::iniciarTerminal() {
+    cout << "Bienvenido al cliente de Base de Datos." << endl;
+    cout << "Tipie 'ayuda' para conocer los comandos permitidos. Tipe 'exit' para salir." << endl;
+    cout << endl;
+
+    string comando;
+    bool salir = false;
+    while (!salir) {
+
+        printf(">");
+        getline(cin, comando, '\n');
+
+        if (comando.compare("exit") == 0) {
+            salir = true;
+            cout<<"Adios"<<"!"<<endl;
+        } else {
+            this->ejecutarComandos(comando);
+        }
+    }
+}
+
+void Cliente::ejecutarComandos(string caracteristica) {
+
+    std::regex e ("(insertar)\\((.*),(.*),(.*)\\)");
+
+    std::cmatch cm;
+    if (std::regex_match (caracteristica.c_str(),cm,e)) {
+
+        mensaje request;
+        mensaje response;
+
+        request.mtype = REQUEST;
+        request.pid = getpid();
+        request.cmd = CMD_INSERTAR;
+        strcpy(request.nombre,cm[2].str().c_str());
+        strcpy(request.direccion,cm[3].str().c_str());
+        strcpy(request.telefono,cm[4].str().c_str());
+
+        this->cola->escribir(request);
+        this->cola->leer(RESPONSE, &response);
+        cout << "Registro insertado" << endl;
+
+    } else if (caracteristica.compare("listar") == 0) {
+        mensaje request;
+        mensaje response;
+
+        request.mtype = REQUEST;
+        request.pid = getpid();
+        request.cmd = CMD_CONSULTAR;
+        this->cola->escribir(request);
+        this->cola->leer(RESPONSE, &response);
+        cout << "Consulta" << endl;
+
+    } else if (caracteristica.compare("ayuda") == 0) {
+        cout << endl;
+        cout << "=============================================" << endl;
+        cout << "                   AYUDA                     " << endl;
+        cout << "=============================================" << endl;
+        cout << "Comandos permitidos: " << endl;
+        cout << endl;
+        cout << "ayuda                                   Ayuda para el usuario." << endl;
+        cout << "insertar(nombre,direccion, telefono)    Inserta un usuario." << endl;
+        cout << "listar                                  Listar todos los usuarios insertados." << endl;
+        cout << "exit                                    Salir." << endl;
+        cout << endl;
+    } else {
+        cout<<"Comando no encontrado"<<"!"<<endl;
+    }
+}
+
 void Cliente::iniciar() {
-    cout << "Iniciando en modo cliente" << endl;
+
     char input = 'a';
     while (input != '0') {
         cout << endl;
@@ -110,9 +182,7 @@ int Cliente::altaPersona() {
 }
 
 Cliente::Cliente(const string& archivo, const char letra) {
-    cout << "Creando cliente" << endl;
     this->cola = new Cola<mensaje>(archivo, letra);
-    cout << "Cliente creado" << endl;
 }
 
 Cliente::~Cliente() {

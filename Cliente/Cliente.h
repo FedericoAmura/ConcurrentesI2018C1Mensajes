@@ -15,11 +15,15 @@ private:
     int consultarPersona();
     int altaPersona();
 
+    void ejecutarComandos(string caracteristica);
+
 public:
     Cliente(const string& archivo, char letra);
     ~Cliente();
 
     void iniciar();
+    void iniciarTerminal();
+
 };
 
 
