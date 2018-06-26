@@ -1,15 +1,16 @@
-#include <iostream>
-#include <unistd.h>
 #include <cstring>
-#include <string>
+#include <iostream>
 #include <regex>
+#include <unistd.h>
+
 #include "Cliente.h"
 
 using namespace std;
 
 void Cliente::iniciar() {
+    cout << endl;
     cout << "Bienvenido al cliente de Base de Datos." << endl;
-    cout << "Tipie 'ayuda' para conocer los comandos permitidos. Tipe 'exit' para salir." << endl;
+    cout << "Ingrese 'ayuda' para conocer los comandos permitidos." << endl;
     cout << endl;
 
     string comando;
@@ -21,7 +22,8 @@ void Cliente::iniciar() {
 
         if (comando.compare("salir") == 0) {
             salir = true;
-            cout<<"Adios"<<"!"<<endl;
+            cout << endl;
+            cout << "Adios." << endl;
         } else {
             this->ejecutarComandos(comando);
         }
@@ -29,13 +31,11 @@ void Cliente::iniciar() {
 }
 
 void Cliente::ejecutarComandos(string caracteristica) {
-
-    std::regex eInsertar ("(insertar)\\((.*),(.*),(.*)\\)");
-    std::regex eListar ("(listar)\\((.*),(.*),(.*)\\)");
+    std::regex eInsertar("(insertar)\\((.*),(.*),(.*)\\)");
+    std::regex eListar("(listar)\\((.*),(.*),(.*)\\)");
 
     std::cmatch cm;
-    if (std::regex_match (caracteristica.c_str(),cm,eInsertar)) {
-
+    if (std::regex_match(caracteristica.c_str(),cm,eInsertar)) {
         mensaje request;
         mensaje response;
 
@@ -49,8 +49,7 @@ void Cliente::ejecutarComandos(string caracteristica) {
         this->cola->escribir(request);
         this->cola->leer(RESPONSE, &response);
         cout << "Registro insertado" << endl;
-    } else if (std::regex_match (caracteristica.c_str(),cm,eListar)) {
-
+    } else if (std::regex_match(caracteristica.c_str(),cm,eListar)) {
         mensaje request;
         mensaje response;
 
@@ -88,12 +87,12 @@ void Cliente::ejecutarComandos(string caracteristica) {
         cout << "ayuda                                   Ayuda para el usuario." << endl;
         cout << "insertar(nombre,direccion,telefono)     Inserta un usuario. Se pueden ingresar vacios." << endl;
         cout << "                                        Se debe respetar la cantidad de parametros y el orden" << endl;
-        cout << "listar(nombre,direccion,telefono)       Listar los usuarios que coinciden según los campos." << endl;
+        cout << "listar(nombre,direccion,telefono)       Listar los usuarios que coinciden con los valores ingresados, ignorando los vacios." << endl;
         cout << "listar                                  Listar todos los usuarios insertados." << endl;
-        cout << "salir                                   Salir." << endl;
+        cout << "salir                                   Salir del programa." << endl;
         cout << endl;
     } else {
-        cout<<"Comando no encontrado"<<"!"<<endl;
+        cout<<"Comando no encontrado"<<endl;
     }
 }
 
