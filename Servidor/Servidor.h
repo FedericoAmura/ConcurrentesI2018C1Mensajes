@@ -13,11 +13,12 @@ class Servidor {
 private:
     Cola<mensaje>* cola;
     SIGINT_Handler sigint_handler;
+    bool debug;
 
     int procesarPeticion();
 
 public:
-    Servidor(const string& archivo, char letra);
+    Servidor(const string& archivo, char letra, bool debug);
     ~Servidor();
 
     void iniciar();

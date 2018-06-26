@@ -181,10 +181,16 @@ int Cliente::altaPersona() {
     return 0;
 }
 
-Cliente::Cliente(const string& archivo, const char letra) {
+
+Cliente::Cliente(const string& archivo, const char letra, bool debug) : debug(debug) {
+    cout << "CLIENT - Creando cliente" << endl;
     this->cola = new Cola<mensaje>(archivo, letra);
+    cout << "CLIENT - Cliente creado" << endl;
 }
 
 Cliente::~Cliente() {
+    cout << "CLIENT - Cerrando cliente" << endl;
+    //this->cola->destruir();
     delete this->cola;
+    cout << "CLIENT - Cliente cerrado" << endl;
 }

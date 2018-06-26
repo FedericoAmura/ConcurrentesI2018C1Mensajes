@@ -16,10 +16,11 @@ int main(int argc, char* argv[]) {
     }
 
     if (MODO_CLIENTE == params.modo) {
-        Cliente cliente(ARCHIVO, LETRA);
+        Cliente cliente(ARCHIVO, LETRA, params.debug);
+        //cliente.iniciar();
         cliente.iniciarTerminal();
     } else if (MODO_SERVIDOR == params.modo) {
-        Servidor server(ARCHIVO, LETRA);
+        Servidor server(ARCHIVO, LETRA, params.debug);
         server.iniciar();
     }
 

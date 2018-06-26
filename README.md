@@ -36,13 +36,14 @@ Una vez terminado, ya podrá pasar a la sección de ejecución
 ## Ejecución
 Para correr el programa debe primero ejecutar el servidor
 ```bash
-$ ./mensajes -s
+$ ./mensajes -s [-d]
 ```
 
 Luego ejecutara tantos clientes como desee
 ```bash
-$ ./mensajes -c
+$ ./mensajes -c [-d]
 ```
 
 Una vez dentro del cliente, un menú interactivo lo llevará para poder realizar las consultas deseadas
 
+Opcionalmente, puede agregar el parametro `-d` para activar las impresiones de debug

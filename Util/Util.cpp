@@ -10,6 +10,7 @@ t_parametros Util::tomarParametros(int argc,char* argv[]) {
     bool pendingParams = true;
     t_parametros params;
     params.modo = 0;
+    params.debug = false;
 
     while (pendingParams)
     {
@@ -17,12 +18,13 @@ t_parametros Util::tomarParametros(int argc,char* argv[]) {
             {
                     {"servidor",  no_argument, nullptr, 's'},
                     {"cliente",  no_argument, nullptr, 'c'},
+                    {"debug",  no_argument, nullptr, 'd'},
                     {0, 0, 0, 0}
             };
         /* getopt_long stores the option index here. */
         int option_index = 0;
 
-        c = getopt_long (argc, argv, "sc",
+        c = getopt_long (argc, argv, "sc:d",
                          long_options, &option_index);
 
         /* Detect the end of the options. */
@@ -37,6 +39,9 @@ t_parametros Util::tomarParametros(int argc,char* argv[]) {
                 break;
             case 's':
                 params.modo = MODO_SERVIDOR;
+                break;
+            case 'd':
+                params.debug = true;
                 break;
             case '?':
                 break;

@@ -13,19 +13,6 @@ void Servidor::iniciar() {
     }
 }
 
-Servidor::Servidor(const string& archivo, const char letra) {
-    cout << "Creando servidor" << endl;
-    SignalHandler::getInstance()->registrarHandler(SIGINT,&sigint_handler);
-    this->cola = new Cola<mensaje>(archivo, letra);
-    cout << "Servidor creado" << endl;
-}
-
-Servidor::~Servidor() {
-    cout << "Cerrando servidor" << endl;
-    delete this->cola;
-    cout << "Servidor cerrado" << endl;
-}
-
 int Servidor::procesarPeticion () {
     mensaje request;
     mensaje response;
@@ -57,4 +44,18 @@ int Servidor::procesarPeticion () {
     this->cola->escribir(response);
 
     return 0;
+}
+
+Servidor::Servidor(const string& archivo, const char letra, bool debug) : debug(debug) {
+    cout << "SERVER - Creando servidor" << endl;
+    SignalHandler::getInstance()->registrarHandler(SIGINT,&sigint_handler);
+    this->cola = new Cola<mensaje>(archivo, letra);
+    cout << "SERVER - Servidor creado" << endl;
+}
+
+Servidor::~Servidor() {
+    cout << "SERVER - Cerrando servidor" << endl;
+    //this->cola->destruir();
+    delete this->cola;
+    cout << "SERVER - Servidor cerrado" << endl;
 }

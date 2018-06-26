@@ -11,6 +11,7 @@ using namespace std;
 class Cliente {
 private:
     Cola<mensaje>* cola;
+    bool debug;
 
     int consultarPersona();
     int altaPersona();
@@ -18,7 +19,7 @@ private:
     void ejecutarComandos(string caracteristica);
 
 public:
-    Cliente(const string& archivo, char letra);
+    Cliente(const string& archivo, char letra, bool debug);
     ~Cliente();
 
     void iniciar();
