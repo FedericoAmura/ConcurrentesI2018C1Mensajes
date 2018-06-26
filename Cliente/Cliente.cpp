@@ -7,7 +7,7 @@
 
 using namespace std;
 
-void Cliente::iniciarTerminal() {
+void Cliente::iniciar() {
     cout << "Bienvenido al cliente de Base de Datos." << endl;
     cout << "Tipie 'ayuda' para conocer los comandos permitidos. Tipe 'exit' para salir." << endl;
     cout << endl;
@@ -19,7 +19,7 @@ void Cliente::iniciarTerminal() {
         printf(">");
         getline(cin, comando, '\n');
 
-        if (comando.compare("exit") == 0) {
+        if (comando.compare("salir") == 0) {
             salir = true;
             cout<<"Adios"<<"!"<<endl;
         } else {
@@ -30,10 +30,11 @@ void Cliente::iniciarTerminal() {
 
 void Cliente::ejecutarComandos(string caracteristica) {
 
-    std::regex e ("(insertar)\\((.*),(.*),(.*)\\)");
+    std::regex eInsertar ("(insertar)\\((.*),(.*),(.*)\\)");
+    std::regex eListar ("(listar)\\((.*),(.*),(.*)\\)");
 
     std::cmatch cm;
-    if (std::regex_match (caracteristica.c_str(),cm,e)) {
+    if (std::regex_match (caracteristica.c_str(),cm,eInsertar)) {
 
         mensaje request;
         mensaje response;
@@ -48,6 +49,20 @@ void Cliente::ejecutarComandos(string caracteristica) {
         this->cola->escribir(request);
         this->cola->leer(RESPONSE, &response);
         cout << "Registro insertado" << endl;
+    } else if (std::regex_match (caracteristica.c_str(),cm,eListar)) {
+
+        mensaje request;
+        mensaje response;
+
+        request.mtype = REQUEST;
+        request.pid = getpid();
+        request.cmd = CMD_CONSULTAR;
+        strcpy(request.nombre,cm[2].str().c_str());
+        strcpy(request.direccion,cm[3].str().c_str());
+        strcpy(request.telefono,cm[4].str().c_str());
+
+        this->cola->escribir(request);
+        this->cola->leer(RESPONSE, &response);
 
     } else if (caracteristica.compare("listar") == 0) {
         mensaje request;
@@ -56,9 +71,12 @@ void Cliente::ejecutarComandos(string caracteristica) {
         request.mtype = REQUEST;
         request.pid = getpid();
         request.cmd = CMD_CONSULTAR;
+        strcpy(request.nombre,"");
+        strcpy(request.direccion,"");
+        strcpy(request.telefono,"");
+
         this->cola->escribir(request);
         this->cola->leer(RESPONSE, &response);
-        cout << "Consulta" << endl;
 
     } else if (caracteristica.compare("ayuda") == 0) {
         cout << endl;
@@ -68,118 +86,17 @@ void Cliente::ejecutarComandos(string caracteristica) {
         cout << "Comandos permitidos: " << endl;
         cout << endl;
         cout << "ayuda                                   Ayuda para el usuario." << endl;
-        cout << "insertar(nombre,direccion, telefono)    Inserta un usuario." << endl;
+        cout << "insertar(nombre,direccion,telefono)     Inserta un usuario. Se pueden ingresar vacios." << endl;
+        cout << "                                        Se debe respetar la cantidad de parametros y el orden" << endl;
+        cout << "listar(nombre,direccion,telefono)       Listar los usuarios que coinciden según los campos." << endl;
         cout << "listar                                  Listar todos los usuarios insertados." << endl;
-        cout << "exit                                    Salir." << endl;
+        cout << "salir                                   Salir." << endl;
         cout << endl;
     } else {
         cout<<"Comando no encontrado"<<"!"<<endl;
     }
 }
 
-void Cliente::iniciar() {
-
-    char input = 'a';
-    while (input != '0') {
-        cout << endl;
-        cout << "------- MENU -------" << endl;
-        cout << "0: Salir" << endl;
-        cout << "1: Consultar personas" << endl;
-        cout << "2: Alta de persona" << endl;
-        cout << "Seleccione una opcion: ";
-        cin >> input;
-
-        switch (input) {
-            case '0':
-                cout << endl;
-                cout << "Se procedera a cerrar el cliente" << endl;
-                break;
-            case '1': {
-                consultarPersona();
-                break;
-            }
-            case '2': {
-                altaPersona();
-                break;
-            }
-            default:
-                cout << "Opcion no reconocida" << endl;
-                break;
-        }
-    }
-}
-
-int Cliente::consultarPersona() {
-    mensaje request;
-    mensaje response;
-
-    cout << endl;
-    cout << "=============================================" << endl;
-    cout << "             Consulta de personas            " << endl;
-    cout << "=============================================" << endl;
-
-    request.mtype = REQUEST;
-    request.pid = getpid();
-    request.cmd = CMD_CONSULTAR;
-    strcpy(request.nombre,"Estamos");
-    strcpy(request.direccion,"Consultando");
-    strcpy(request.telefono,"Gente");
-
-    cout << "Vamos a enviar la consulta" << endl;
-
-    this->cola->escribir(request);
-
-    cout << "Enviamos la consulta" << endl;
-
-    this->cola->leer(RESPONSE, &response);
-
-    cout << "Recibimos la respuesta" << endl;
-
-    cout << "mtype " << response.mtype << endl;
-    cout << "pid " << response.pid << endl;
-    cout << "cmd " << response.cmd << endl;
-    cout << "nombre " << response.nombre << endl;
-    cout << "direccion " << response.direccion << endl;
-    cout << "telefono " << response.telefono << endl;
-
-    return 0;
-}
-
-int Cliente::altaPersona() {
-    mensaje request;
-    mensaje response;
-
-    cout << endl;
-    cout << "=============================================" << endl;
-    cout << "               Alta de persona               " << endl;
-    cout << "=============================================" << endl;
-
-    request.mtype = REQUEST;
-    request.pid = getpid();
-    request.cmd = CMD_CONSULTAR;
-    strcpy(request.nombre,"Damos");
-    strcpy(request.direccion,"de alta");
-    strcpy(request.telefono,"Personas");
-
-    cout << "Vamos a enviar la consulta" << endl;
-
-    this->cola->escribir(request);
-
-    cout << "Enviamos la consulta" << endl;
-
-    this->cola->leer(RESPONSE, &response);
-
-    cout << "Recibimos la respuesta" << endl;
-
-    cout << "mtype " << response.mtype << endl;
-    cout << "pid " << response.pid << endl;
-    cout << "cmd " << response.cmd << endl;
-    cout << "nombre " << response.nombre << endl;
-    cout << "direccion " << response.direccion << endl;
-    cout << "telefono " << response.telefono << endl;
-
-    return 0;
-}
 
 
 Cliente::Cliente(const string& archivo, const char letra, bool debug) : debug(debug) {

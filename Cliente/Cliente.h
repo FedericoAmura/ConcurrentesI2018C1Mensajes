@@ -13,9 +13,6 @@ private:
     Cola<mensaje>* cola;
     bool debug;
 
-    int consultarPersona();
-    int altaPersona();
-
     void ejecutarComandos(string caracteristica);
 
 public:
@@ -23,7 +20,6 @@ public:
     ~Cliente();
 
     void iniciar();
-    void iniciarTerminal();
 
 };
 
