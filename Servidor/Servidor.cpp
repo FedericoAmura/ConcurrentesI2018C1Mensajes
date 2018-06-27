@@ -3,6 +3,7 @@
 
 #include "Servidor.h"
 
+#include "../GestorDB/Registro.h"
 #include "../Signal/SignalHandler.h"
 
 void Servidor::iniciar() {
@@ -35,26 +36,27 @@ int Servidor::procesarPeticion () {
     response.pid = getpid();
     // y ahora la procesamos segun lo que nos pidieron
     if (request.cmd == CMD_INSERTAR) {
+
         // aca insertamos un registro
-        // TODO insertamos el registro en la DB
+        db->insertar(Registro(request.nombre, request.direccion, request.telefono));
+
         response.cmd = CMD_INSERTADO;
         strcpy(response.nombre,request.nombre);
         strcpy(response.direccion,request.direccion);
         strcpy(response.telefono,request.telefono);
         this->cola->escribir(response);
     } else if (request.cmd == CMD_CONSULTAR) {
+
         // aca consultamos registros
-        // TODO sacamos los registros de la DB y los mandamos en loop, en vez de hardcodear
-        response.cmd = CMD_RESPUESTA;
-        strcpy(response.nombre,"primer");
-        strcpy(response.direccion,"registro");
-        strcpy(response.telefono,"encontrado");
-        this->cola->escribir(response);
-        response.cmd = CMD_RESPUESTA;
-        strcpy(response.nombre,"segundo");
-        strcpy(response.direccion,"registro");
-        strcpy(response.telefono,"encontrado");
-        this->cola->escribir(response);
+        vector<Registro> resultado = db->consulta(Registro(request.nombre, request.direccion, request.telefono));
+
+        for (auto it : resultado) {
+            response.cmd = CMD_RESPUESTA;
+            strcpy(response.nombre, it.getNombre());
+            strcpy(response.direccion, it.getDireccion());
+            strcpy(response.telefono, it.getTelefono());
+            this->cola->escribir(response);
+        }
 
         // enviamos un ultimo registro para marcar el final
         response.cmd = CMD_VACIO;
@@ -78,12 +80,14 @@ Servidor::Servidor(const string& archivo, const char letra, bool debug) : debug(
     cout << "SERVER - Creando servidor" << endl;
     SignalHandler::getInstance()->registrarHandler(SIGINT,&sigint_handler);
     this->cola = new Cola<mensaje>(archivo, letra);
+    this->db = new GestorDB();
     cout << "SERVER - Servidor creado" << endl;
 }
 
 Servidor::~Servidor() {
     cout << "SERVER - Cerrando servidor" << endl;
     //this->cola->destruir();
+    delete this->db;
     delete this->cola;
     cout << "SERVER - Servidor cerrado" << endl;
 }

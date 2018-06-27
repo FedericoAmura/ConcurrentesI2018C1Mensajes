@@ -1,0 +1,12 @@
+set(SOURCE
+        ${SOURCE}
+        ${CMAKE_CURRENT_SOURCE_DIR}/GestorDB.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/Registro.cpp
+        PARENT_SCOPE
+        )
+set(HEADERS
+        ${HEADERS}
+        ${CMAKE_CURRENT_SOURCE_DIR}/GestorDB.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/Registro.h
+        PARENT_SCOPE
+        )

@@ -6,11 +6,13 @@
 #include "../Cola/Cola.h"
 #include "../Cola/Mensajes.h"
 #include "../Signal/SIGINT_Handler.h"
+#include "../GestorDB/GestorDB.h"
 
 using namespace std;
 
 class Servidor {
 private:
+    GestorDB* db;
     Cola<mensaje>* cola;
     SIGINT_Handler sigint_handler;
     bool debug;

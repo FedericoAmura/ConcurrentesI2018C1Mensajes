@@ -7,9 +7,11 @@ set(SOURCE
 
 add_subdirectory("${PROJECT_SOURCE_DIR}/Cliente")
 add_subdirectory("${PROJECT_SOURCE_DIR}/Cola")
+add_subdirectory("${PROJECT_SOURCE_DIR}/GestorDB")
 add_subdirectory("${PROJECT_SOURCE_DIR}/Servidor")
 add_subdirectory("${PROJECT_SOURCE_DIR}/Signal")
 add_subdirectory("${PROJECT_SOURCE_DIR}/Util")
+
 
 
 add_executable(mensajes ${SOURCE} ${HEADERS})
