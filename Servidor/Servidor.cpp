@@ -86,7 +86,7 @@ Servidor::Servidor(const string& archivo, const char letra, bool debug) : debug(
 
 Servidor::~Servidor() {
     cout << "SERVER - Cerrando servidor" << endl;
-    //this->cola->destruir();
+    this->cola->destruir();
     delete this->db;
     delete this->cola;
     cout << "SERVER - Servidor cerrado" << endl;
