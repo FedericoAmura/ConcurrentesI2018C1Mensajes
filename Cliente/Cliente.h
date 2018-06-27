@@ -2,9 +2,15 @@
 #define CONCULANDIA_CLIENTE_H
 
 #include <string>
-
+#include <cstring>
+#include <iostream>
+#include <regex>
+#include <unistd.h>
+#include "../Util/Util.h"
 #include "../Cola/Cola.h"
 #include "../Cola/Mensajes.h"
+#define OPCION_SALIR 1
+#define OPCION_CONTINUAR 0
 
 using namespace std;
 
@@ -13,14 +19,47 @@ private:
     Cola<mensaje>* cola;
     bool debug;
 
-    void ejecutarComandos(string caracteristica);
+    /**
+     * Interpreta el comando ingresado para ejcutarlo.
+     * @param comando String Comando tipeado por el usuario.
+     * */
+    int ejecutarComandos(string comando);
+
+    /**
+     * Inserta un registro en la tabla Personas.
+     * @param cm Contiene los parametros obtenidos por la regular expresion
+     * */
+    void ejecutarInsertar(std::cmatch cm);
+
+    /**
+     * Lista los registros de la tabla personas que coincidan con los parametros.
+     * @param cm Contiene los parametros obtenidos por la regular expresion
+     * */
+    void ejecutarListar(std::cmatch cm);
+
+    /**
+     * Lista todos los registros de la tabla personas.
+     * */
+    void ejecutarListarTodo();
+
+    /**
+     * Muestra el manual de comandos permitidos para el usuario
+     * */
+    void ejecutarAyuda();
+
+    /**
+     * Da la bienvenida al usuario
+     * */
+    void mostrarBienvenida();
 
 public:
     Cliente(const string& archivo, char letra, bool debug);
     ~Cliente();
 
+    /**
+     * Inicia la terminal del cliente de base datos
+     * */
     void iniciar();
-
 };
 
 

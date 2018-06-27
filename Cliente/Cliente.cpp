@@ -1,125 +1,138 @@
-#include <cstring>
-#include <iostream>
-#include <regex>
-#include <unistd.h>
-
 #include "Cliente.h"
+
 
 using namespace std;
 
 void Cliente::iniciar() {
-    cout << endl;
-    cout << "Bienvenido al cliente de Base de Datos." << endl;
-    cout << "Ingrese 'ayuda' para conocer los comandos permitidos." << endl;
-    cout << endl;
-
+    this->mostrarBienvenida();
     string comando;
-    bool salir = false;
-    while (!salir) {
-
+    int status = OPCION_CONTINUAR;
+    while (status == OPCION_CONTINUAR) {
         printf(">");
         getline(cin, comando, '\n');
-
-        if (comando.compare("salir") == 0) {
-            salir = true;
-            cout << endl;
-            cout << "Adios." << endl;
-        } else {
-            this->ejecutarComandos(comando);
-        }
+        status = this->ejecutarComandos(Util::trim(comando));
     }
 }
 
-void Cliente::ejecutarComandos(string caracteristica) {
+int Cliente::ejecutarComandos(string comando) {
+    int status = OPCION_CONTINUAR;
     std::regex eInsertar("(insertar)\\((.*),(.*),(.*)\\)");
     std::regex eListar("(listar)\\((.*),(.*),(.*)\\)");
 
     std::cmatch cm;
-    if (std::regex_match(caracteristica.c_str(),cm,eInsertar)) {
-        mensaje request;
-        mensaje response;
-
-        request.mtype = REQUEST;
-        request.pid = getpid();
-        request.cmd = CMD_INSERTAR;
-        strcpy(request.nombre,cm[2].str().c_str());
-        strcpy(request.direccion,cm[3].str().c_str());
-        strcpy(request.telefono,cm[4].str().c_str());
-
-        this->cola->escribir(request);
-        this->cola->leer(getpid(), &response);
-        if (response.cmd == CMD_INSERTADO) {
-            cout << "Se inserto el registro" << endl;
-            cout << "Nombre - Direccion - Telefono" << endl;
-            cout << response.nombre << " - " << response. direccion << " - " << response.telefono << endl;
-        } else {
-            cout << "Error al insertar registro" << endl;
-        }
-    } else if (std::regex_match(caracteristica.c_str(),cm,eListar)) {
-        mensaje request;
-        mensaje response;
-
-        request.mtype = REQUEST;
-        request.pid = getpid();
-        request.cmd = CMD_CONSULTAR;
-        strcpy(request.nombre,cm[2].str().c_str());
-        strcpy(request.direccion,cm[3].str().c_str());
-        strcpy(request.telefono,cm[4].str().c_str());
-
-        this->cola->escribir(request);
-
-        this->cola->leer(getpid(), &response);
-        if (response.cmd == CMD_VACIO) {
-            cout << "Su consulta no encontro ningun registro" << endl;
-        } else {
-            cout << "Nombre - Direccion - Telefono" << endl;
-            while (response.cmd != CMD_VACIO) {
-                cout << response.nombre << " - " << response. direccion << " - " << response.telefono << endl;
-                this->cola->leer(getpid(), &response);
-            }
-        }
-    } else if (caracteristica.compare("listar") == 0) {
-        mensaje request;
-        mensaje response;
-
-        request.mtype = REQUEST;
-        request.pid = getpid();
-        request.cmd = CMD_CONSULTAR;
-        strcpy(request.nombre,"");
-        strcpy(request.direccion,"");
-        strcpy(request.telefono,"");
-
-        this->cola->escribir(request);
-
-        this->cola->leer(getpid(), &response);
-        if (response.cmd == CMD_VACIO) {
-            cout << "Su consulta no encontro ningun registro" << endl;
-        } else {
-            cout << "Nombre - Direccion - Telefono" << endl;
-            while (response.cmd != CMD_VACIO) {
-                cout << response.nombre << " - " << response. direccion << " - " << response.telefono << endl;
-                this->cola->leer(getpid(), &response);
-            }
-        }
-    } else if (caracteristica.compare("ayuda") == 0) {
+    if (std::regex_match(comando.c_str(),cm,eInsertar)) {
+        this->ejecutarInsertar(cm);
+    } else if (std::regex_match(comando.c_str(),cm,eListar)) {
+        this->ejecutarListar(cm);
+    } else if (comando.compare("listar") == 0) {
+        this->ejecutarListarTodo();
+    } else if (comando.compare("ayuda") == 0) {
+        this->ejecutarAyuda();
+    } else if (comando.compare("salir") == 0) {
         cout << endl;
-        cout << "=============================================" << endl;
-        cout << "                   AYUDA                     " << endl;
-        cout << "=============================================" << endl;
-        cout << "Comandos permitidos: " << endl;
-        cout << endl;
-        cout << "ayuda                                   Ayuda para el usuario." << endl;
-        cout << "insertar(nombre,direccion,telefono)     Inserta un usuario. Se pueden ingresar vacios." << endl;
-        cout << "                                        Se debe respetar la cantidad de parametros y el orden" << endl;
-        cout << "listar(nombre,direccion,telefono)       Listar los usuarios que coinciden con los valores ingresados, ignorando los vacios." << endl;
-        cout << "listar                                  Listar todos los usuarios insertados." << endl;
-        cout << "salir                                   Salir del programa." << endl;
-        cout << endl;
+        cout << "Adios." << endl;
+        status = OPCION_SALIR;
     } else {
         cout<<"Comando no encontrado"<<endl;
     }
+    return status;
 }
 
+
+void Cliente::ejecutarInsertar(std::cmatch cm) {
+    mensaje request;
+    mensaje response;
+
+    request.mtype = REQUEST;
+    request.pid = getpid();
+    request.cmd = CMD_INSERTAR;
+    strcpy(request.nombre,cm[2].str().c_str());
+    strcpy(request.direccion,cm[3].str().c_str());
+    strcpy(request.telefono,cm[4].str().c_str());
+
+    this->cola->escribir(request);
+    this->cola->leer(getpid(), &response);
+    if (response.cmd == CMD_INSERTADO) {
+        cout << "Se inserto el registro" << endl;
+        cout << "Nombre - Direccion - Telefono" << endl;
+        cout << response.nombre << " - " << response. direccion << " - " << response.telefono << endl;
+    } else {
+        cout << "Error al insertar registro" << endl;
+    }
+}
+
+void Cliente::ejecutarListar(std::cmatch cm) {
+    mensaje request;
+    mensaje response;
+
+    request.mtype = REQUEST;
+    request.pid = getpid();
+    request.cmd = CMD_CONSULTAR;
+    strcpy(request.nombre,cm[2].str().c_str());
+    strcpy(request.direccion,cm[3].str().c_str());
+    strcpy(request.telefono,cm[4].str().c_str());
+
+    this->cola->escribir(request);
+
+    this->cola->leer(getpid(), &response);
+    if (response.cmd == CMD_VACIO) {
+        cout << "Su consulta no encontro ningun registro" << endl;
+    } else {
+        cout << "Nombre - Direccion - Telefono" << endl;
+        while (response.cmd != CMD_VACIO) {
+            cout << response.nombre << " - " << response. direccion << " - " << response.telefono << endl;
+            this->cola->leer(getpid(), &response);
+        }
+    }
+}
+
+void Cliente::ejecutarListarTodo() {
+    mensaje request;
+    mensaje response;
+
+    request.mtype = REQUEST;
+    request.pid = getpid();
+    request.cmd = CMD_CONSULTAR;
+    strcpy(request.nombre,"");
+    strcpy(request.direccion,"");
+    strcpy(request.telefono,"");
+
+    this->cola->escribir(request);
+
+    this->cola->leer(getpid(), &response);
+    if (response.cmd == CMD_VACIO) {
+        cout << "Su consulta no encontro ningun registro" << endl;
+    } else {
+        cout << "Nombre - Direccion - Telefono" << endl;
+        while (response.cmd != CMD_VACIO) {
+            cout << response.nombre << " - " << response. direccion << " - " << response.telefono << endl;
+            this->cola->leer(getpid(), &response);
+        }
+    }
+}
+
+void Cliente::ejecutarAyuda() {
+    cout << endl;
+    cout << "=============================================" << endl;
+    cout << "                   AYUDA                     " << endl;
+    cout << "=============================================" << endl;
+    cout << "Comandos permitidos: " << endl;
+    cout << endl;
+    cout << "ayuda                                   Ayuda para el usuario." << endl;
+    cout << "insertar(nombre,direccion,telefono)     Inserta un usuario. Se pueden ingresar vacios." << endl;
+    cout << "                                        Se debe respetar la cantidad de parametros y el orden" << endl;
+    cout << "listar(nombre,direccion,telefono)       Listar los usuarios que coinciden con los valores ingresados, ignorando los vacios." << endl;
+    cout << "listar                                  Listar todos los usuarios insertados." << endl;
+    cout << "salir                                   Salir del programa." << endl;
+    cout << endl;
+}
+
+void Cliente::mostrarBienvenida() {
+    cout << endl;
+    cout << "Bienvenido al cliente de Base de Datos." << endl;
+    cout << "Ingrese 'ayuda' para conocer los comandos permitidos." << endl;
+    cout << endl;
+}
 
 
 Cliente::Cliente(const string& archivo, const char letra, bool debug) : debug(debug) {
