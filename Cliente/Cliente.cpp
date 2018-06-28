@@ -21,13 +21,25 @@ int Cliente::ejecutarComandos(string comando) {
 
     std::cmatch cm;
     if (std::regex_match(comando.c_str(),cm,eInsertar)) {
-        this->ejecutarInsertar(cm);
+        if (cm[2].str().size() > LEN_NOMBRE ||
+                cm[3].str().size() > LEN_DIRECCION ||
+                cm[4].str().size() > LEN_TELEFONO) {
+            cout << "Campos muy largos" << endl;
+            return OPCION_CONTINUAR;
+        }
+        status = this->ejecutarInsertar(cm);
     } else if (std::regex_match(comando.c_str(),cm,eListar)) {
-        this->ejecutarListar(cm);
+        if (cm[2].str().size() > LEN_NOMBRE ||
+            cm[3].str().size() > LEN_DIRECCION ||
+            cm[4].str().size() > LEN_TELEFONO) {
+            cout << "Campos muy largos" << endl;
+            return OPCION_CONTINUAR;
+        }
+        status = this->ejecutarListar(cm);
     } else if (comando.compare("listar") == 0) {
-        this->ejecutarListarTodo();
+        status = this->ejecutarListarTodo();
     } else if (comando.compare("ayuda") == 0) {
-        this->ejecutarAyuda();
+        status = this->ejecutarAyuda();
     } else if (comando.compare("salir") == 0) {
         cout << endl;
         cout << "Adios." << endl;
@@ -39,7 +51,7 @@ int Cliente::ejecutarComandos(string comando) {
 }
 
 
-void Cliente::ejecutarInsertar(std::cmatch cm) {
+int Cliente::ejecutarInsertar(std::cmatch cm) {
     mensaje request;
     mensaje response;
 
@@ -50,8 +62,10 @@ void Cliente::ejecutarInsertar(std::cmatch cm) {
     strcpy(request.direccion,cm[3].str().c_str());
     strcpy(request.telefono,cm[4].str().c_str());
 
-    this->cola->escribir(request);
-    this->cola->leer(getpid(), &response);
+    if (this->cola->escribir(request) == -1) return OPCION_SALIR;
+
+    if (this->cola->leer(getpid(), &response) == -1) return OPCION_SALIR;
+
     if (response.cmd == CMD_INSERTADO) {
         cout << "Se inserto el registro" << endl;
         cout << "Nombre - Direccion - Telefono" << endl;
@@ -59,9 +73,11 @@ void Cliente::ejecutarInsertar(std::cmatch cm) {
     } else {
         cout << "Error al insertar registro" << endl;
     }
+
+    return OPCION_CONTINUAR;
 }
 
-void Cliente::ejecutarListar(std::cmatch cm) {
+int Cliente::ejecutarListar(std::cmatch cm) {
     mensaje request;
     mensaje response;
 
@@ -72,9 +88,9 @@ void Cliente::ejecutarListar(std::cmatch cm) {
     strcpy(request.direccion,cm[3].str().c_str());
     strcpy(request.telefono,cm[4].str().c_str());
 
-    this->cola->escribir(request);
+    if (this->cola->escribir(request) == -1) return OPCION_SALIR;
 
-    this->cola->leer(getpid(), &response);
+    if (this->cola->leer(getpid(), &response) == -1) return OPCION_SALIR;
     if (response.cmd == CMD_VACIO) {
         cout << "Su consulta no encontro ningun registro" << endl;
     } else {
@@ -84,9 +100,11 @@ void Cliente::ejecutarListar(std::cmatch cm) {
             this->cola->leer(getpid(), &response);
         }
     }
+
+    return OPCION_CONTINUAR;
 }
 
-void Cliente::ejecutarListarTodo() {
+int Cliente::ejecutarListarTodo() {
     mensaje request;
     mensaje response;
 
@@ -97,9 +115,10 @@ void Cliente::ejecutarListarTodo() {
     strcpy(request.direccion,"");
     strcpy(request.telefono,"");
 
-    this->cola->escribir(request);
+    if (this->cola->escribir(request) == -1) return OPCION_SALIR;
 
-    this->cola->leer(getpid(), &response);
+    if (this->cola->leer(getpid(), &response) == -1) return OPCION_SALIR;
+
     if (response.cmd == CMD_VACIO) {
         cout << "Su consulta no encontro ningun registro" << endl;
     } else {
@@ -109,9 +128,11 @@ void Cliente::ejecutarListarTodo() {
             this->cola->leer(getpid(), &response);
         }
     }
+
+    return OPCION_CONTINUAR;
 }
 
-void Cliente::ejecutarAyuda() {
+int Cliente::ejecutarAyuda() {
     cout << endl;
     cout << "=============================================" << endl;
     cout << "                   AYUDA                     " << endl;
@@ -125,6 +146,8 @@ void Cliente::ejecutarAyuda() {
     cout << "listar                                  Listar todos los usuarios insertados." << endl;
     cout << "salir                                   Salir del programa." << endl;
     cout << endl;
+
+    return OPCION_CONTINUAR;
 }
 
 void Cliente::mostrarBienvenida() {

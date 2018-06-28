@@ -29,23 +29,23 @@ private:
      * Inserta un registro en la tabla Personas.
      * @param cm Contiene los parametros obtenidos por la regular expresion
      * */
-    void ejecutarInsertar(std::cmatch cm);
+    int ejecutarInsertar(std::cmatch cm);
 
     /**
      * Lista los registros de la tabla personas que coincidan con los parametros.
      * @param cm Contiene los parametros obtenidos por la regular expresion
      * */
-    void ejecutarListar(std::cmatch cm);
+    int ejecutarListar(std::cmatch cm);
 
     /**
      * Lista todos los registros de la tabla personas.
      * */
-    void ejecutarListarTodo();
+    int ejecutarListarTodo();
 
     /**
      * Muestra el manual de comandos permitidos para el usuario
      * */
-    void ejecutarAyuda();
+    int ejecutarAyuda();
 
     /**
      * Da la bienvenida al usuario

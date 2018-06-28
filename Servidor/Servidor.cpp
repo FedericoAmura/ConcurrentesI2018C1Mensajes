@@ -20,7 +20,7 @@ int Servidor::procesarPeticion () {
 
     cout << "Esperamos una peticion" << endl;
     // leemos la respuesta
-    this->cola->leer(REQUEST, &(request));
+    if (this->cola->leer(REQUEST, &(request)) == -1) return -1;
 
     cout << "Leemos la peticion" << endl;
 
